@@ -16,7 +16,7 @@ namespace Recipes
         List<PictureBox> AllImages = new List<PictureBox>();
         WebClient webClient = new WebClient();
         string result;
-    
+
         public Form1()
         {
             InitializeComponent();
@@ -24,13 +24,9 @@ namespace Recipes
             this.Controls.Add(label1);
             this.Controls.Add(progressBar1);
             progressBar1.Location = new Point(350, 200);
-            label1.Location = new Point(355, 200);
-            First();
+            label1.Location = new Point(370, 200);
         }
-        private void First()
-        {
 
-        }
 
         private void FullList()
         {
@@ -77,7 +73,7 @@ namespace Recipes
             else
                 tabControl1.TabPages[0].Controls.Add(SetEndPage(x, ytmp));
         }
-          void SetListOnPage(Dictionary<string, Image> D, string Name, TabPage tabPage, int x, ref int y)
+        void SetListOnPage(Dictionary<string, Image> D, string Name, TabPage tabPage, int x, ref int y)
         {
 
             tabPage.Name = Name;
@@ -85,12 +81,11 @@ namespace Recipes
             tabPage.Width = 542;
             tabPage.Height = 597;
             tabPage.AutoScroll = true;
-            //tabPage.BackColor = Color.FromArgb(255, 218, 185);
             AddContent(D, x, ref y, tabPage);
 
         }
-       
-      void AddContent(Dictionary<string, Image> D, int x, ref int y, TabPage tabPage)
+
+        void AddContent(Dictionary<string, Image> D, int x, ref int y, TabPage tabPage)
         {
             int ytmp = 0;
             int n = y;
@@ -108,8 +103,8 @@ namespace Recipes
                 tabPage.Controls.Add(PopularPictureBox(x, ref y, itemValue));
                 tabPage.Controls.Add(PopularLinkLabel(x, ref y, itemKey));
             }
-            if(ytmp>y)
-                y=ytmp;
+            if (ytmp > y)
+                y = ytmp;
         }
         void SetCategories()
         {
@@ -130,7 +125,7 @@ namespace Recipes
 
             TabPage tabPage = new TabPage();
             tabPage.Name = "Result search";
-            tabPage.Text = "Result search";
+            tabPage.Text = "Результаты поиска";
             tabPage.Width = 542;
             tabPage.Height = 597;
             tabPage.AutoScroll = true;
@@ -145,7 +140,7 @@ namespace Recipes
             y += 30;
             tabPage.Controls.Add(label);
 
-            foreach(var item in s)
+            foreach (var item in s)
             {
                 LinkLabel l = new LinkLabel();
                 l.LinkBehavior = LinkBehavior.NeverUnderline;
@@ -175,7 +170,7 @@ namespace Recipes
                 l.Font = new Font("Source Sans Pro", 12);
                 l.Location = new Point(x, y);
                 l.Text = d.Key;
-                l.LinkClicked +=   LinkLabelCategoriesClickAsync;
+                l.LinkClicked += LinkLabelCategoriesClickAsync;
                 l.MaximumSize = new Size(210, 0);
                 l.Visible = true;
                 l.AutoSize = true;
@@ -242,26 +237,17 @@ namespace Recipes
             //Match match = Regex.Match(result, "target=\"_blank\">(.*?)</a>");
             MatchCollection m = r.Matches(result); foreach (Match x in m)
             {
-                New.Add(x.Value);
-            }
-
-            for (int i = 0; i < New.Count; i++)
-            {
-                New[i] = New[i].Substring(New[i].IndexOf('>') + 1, New[i].LastIndexOf('<') - New[i].IndexOf('>') - 1);
-                ImagesNew.Add($"<img src='(.*?)' alt=\"{New[i]}\"");
+                New.Add(x.Groups[1].Value);
+                ImagesNew.Add($"<img src='(.*?)' alt=\"{x.Groups[1].Value}\"");
             }
             //\"Пирог с малиной и творогом\"
-            string g = "href=\"(.*?)target=\"_blank\">";
+            string g = "<a class=\"h5\" href=\"(.*?)\" target=\"_blank\">";
             for (int i = 0; i < New.Count; i++)
             {
                 Match match = Regex.Match(result, g + New[i]);
                 if (match.Success)
                 {
-                    string d = match.Groups[1].Value;
-                    d = d.Substring(0, d.Length - 2);
-                    d = d.Substring(d.LastIndexOf("\"") + 1, d.Length - d.LastIndexOf("\"") - 1);
-                    d = @"https://1000.menu/" + d;
-                    PopularLink.Add(New[i], d);
+                    PopularLink.Add(New[i], @"https://1000.menu/" + match.Groups[1].Value);
                 }
             }
             foreach (var i in ImagesNew)
@@ -287,12 +273,12 @@ namespace Recipes
             FullList();
             SetCategories();
         }
-        async Task CategoriesClickAsync (string lb)
+        async Task CategoriesClickAsync(string lb)
         {
             bool c = false;
             for (int i = 0; i < tabControl1.Controls.Count; i++)
             {
-                if (tabControl1.Controls[i].Name == lb )
+                if (tabControl1.Controls[i].Name == lb)
                 {
                     c = true;
                     break;
@@ -343,7 +329,7 @@ namespace Recipes
             LinkLabel l = (LinkLabel)sender;
             await CategoriesClickAsync(l.Text);
         }
-        async Task <Dictionary<string, Image>> AddContent(Dictionary<string, Image> NameImage, string resultTmp)
+        async Task<Dictionary<string, Image>> AddContent(Dictionary<string, Image> NameImage, string resultTmp)
         {
             GetImageForPage("<img src='(.*?)' alt=\"(.*?)\"", Popular, resultTmp);
             GetImageForPage("<img src='(.*?)' alt=\"(.*?)\"", NameImage, resultTmp);
@@ -382,8 +368,8 @@ namespace Recipes
             try
             {
                 //num = Convert.ToInt32(Link[Link.Length - 1]);
-                
-                num = Convert.ToInt32(Link.Substring(Link.LastIndexOf('/')+1, 1));
+
+                num = Convert.ToInt32(Link.Substring(Link.LastIndexOf('/') + 1, 1));
                 num++;
                 Link = Link.Remove(Link.LastIndexOf('/'), 2);
             }
@@ -392,7 +378,7 @@ namespace Recipes
                 num = 2;
             }
             //string Linktmp = Link;
-            
+
             Categories[page.Name] = Link += $"/{num}";
             //Link += $"/{num}";
             string resultTmp = webClient.DownloadString(Link);
@@ -403,7 +389,7 @@ namespace Recipes
                 NameImage = await AddContent(NameImage, resultTmp);
                 y += 150;
                 AddContent(NameImage, x, ref y, page);
-                b.Location = new Point(170, y );
+                b.Location = new Point(170, y);
                 page.Controls.Add(SetEndPage(x, y));
             }
             else
@@ -412,7 +398,7 @@ namespace Recipes
                 b.Enabled = false;
                 Link = Link.Remove(Link.LastIndexOf('/'), 2);
             }
-            
+
         }
         private void GetImageForPage(string Pattern, Dictionary<string, Image> D, string result)
         {
@@ -421,7 +407,7 @@ namespace Recipes
             TabPage page = tabControl1.SelectedTab;
             tabControl1.Visible = false;
             label1.Visible = true;
-             progressBar1.Maximum = m.Count;
+            progressBar1.Maximum = m.Count;
             progressBar1.Visible = true;
             foreach (Match x in m)
             {
@@ -433,7 +419,7 @@ namespace Recipes
                         webClient.DownloadFile(@"https:" + x.Groups[1].Value, ImageNum + ".jpg");
                         D.Add(x.Groups[2].Value, Image.FromFile(ImageNum.ToString() + ".jpg"));
                         ImageNum++;
-                        
+
                     }
 
                 }
@@ -447,10 +433,7 @@ namespace Recipes
             progressBar1.Value = 0;
             progressBar1.Visible = false;
             label1.Visible = false;
-            
 
-            //page.Controls.Remove(page);
-            //page.Controls.Remove(label1);
         }
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -489,6 +472,8 @@ namespace Recipes
         void SetInstruction(int x, int y, string Link, TabPage t)
         {
             int k = 1;
+            tabControl1.Visible = false;
+            label1.Visible = true;
             while (true)
             {
                 y = y + 20;
@@ -539,7 +524,12 @@ namespace Recipes
 
                 }
                 else
+                {
+                    tabControl1.Visible = true;
+                    label1.Visible = false;
                     break;
+                }
+                   
 
             }
             t.Controls.Add(SetEndPage(x, y));
@@ -605,7 +595,7 @@ namespace Recipes
             }
             return picG;
         }
-        async void ButtonSearchClickAsync(object sender , EventArgs e)
+        async void ButtonSearchClickAsync(object sender, EventArgs e)
         {
             TextBox selectedRtb = (TextBox)tabControl1.SelectedTab.Controls["rtb"];
             string x = selectedRtb.Text;
@@ -616,13 +606,13 @@ namespace Recipes
             {
                 g = c.Key.ToLower();
                 x = x.ToLower();
-                if(g.Contains(x))
+                if (g.Contains(x))
                 {
                     s.Add(c.Key);
-                    d = true;  
+                    d = true;
                 }
             }
-            if(d)
+            if (d)
             {
                 selectedRtb.Text = string.Empty;
                 SearchTabAsync(s);
@@ -633,7 +623,7 @@ namespace Recipes
 
             }
         }
-     
+
         void DeletePic()
         {
             Popular.Clear();
@@ -641,20 +631,20 @@ namespace Recipes
             Categories.Clear();
             webClient.Dispose();
             tabControl1.Dispose();
-            for(int i = 0 ; i<AllImages.Count;i++)
+            for (int i = 0; i < AllImages.Count; i++)
             {
-                if(AllImages[i] != null)
+                if (AllImages[i] != null)
                 {
                     AllImages[i].BackgroundImage.Dispose();
                     AllImages[i].BackgroundImage = null;
                 }
-                
-                
+
+
             }
 
-            for (int i = 0; i < ImageNum-1; i++)
+            for (int i = 0; i < ImageNum - 1; i++)
             {
-               try
+                try
                 {
                     var image = Image.FromFile($"{i}.jpg");
                     image.Dispose(); // this removes all resources
@@ -663,7 +653,7 @@ namespace Recipes
                 catch (System.IO.FileNotFoundException ex)
                 {
 
-                } 
+                }
             }
         }
 
@@ -676,7 +666,7 @@ namespace Recipes
         {
             DeletePic();
         }
- 
+
 
         private void tabPage1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -684,13 +674,13 @@ namespace Recipes
             {
                 this.contextMenuStrip1.Show(this.tabControl1, e.Location);
             }
-            
+
         }
 
         private void закрытьВкладкуToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(tabControl1.SelectedIndex !=0)
-            tabControl1.TabPages.Remove(tabControl1.SelectedTab);
+            if (tabControl1.SelectedIndex != 0)
+                tabControl1.TabPages.Remove(tabControl1.SelectedTab);
             else
                 MessageBox.Show("Нельзя закрыть главную вкладку", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
