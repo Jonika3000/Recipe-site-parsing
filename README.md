@@ -14,3 +14,5 @@ If you click on a dish, its recipe will open, which has a list of the necessary 
 You can close every tab except the main one.
 
 ![image](https://user-images.githubusercontent.com/66825034/184120051-10b62247-cb30-467a-8411-5f9d579d7835.png)
+
+To close a tab, right-click on its body
